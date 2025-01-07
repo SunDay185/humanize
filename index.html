@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>humanizador de ia - AI文本人性化工具</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <img src="logo-placeholder.png" alt="humanizador de ia" id="logo">
+                <span>humanizador de ia</span>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="page-title">
+            <h1>humanizador de ia</h1>
+            <p>使用最智能的AI人性化工具，将AI生成的内容转换为自然、人性化的文本</p>
+        </div>
+
+        <div class="editor-container">
+            <div class="mode-selector">
+                <div class="mode-group">
+                    <button class="mode-btn active">Free</button>
+                    <button class="mode-btn">Standard</button>
+                    <button class="mode-btn">Academic</button>
+                    <button class="mode-btn">Simple</button>
+                    <button class="mode-btn">Formal</button>
+                    <button class="mode-btn">Informal</button>
+                    <button class="mode-btn">Expand</button>
+                    <button class="mode-btn">Shorten</button>
+                </div>
+            </div>
+
+            <div class="text-areas">
+                <div class="text-area-container">
+                    <textarea placeholder="在此输入AI生成的文本..."></textarea>
+                    <div class="text-area-footer">
+                        <span class="word-count">0 words</span>
+                        <div class="button-group">
+                            <button id="clear-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M3 6h18"></path>
+                                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                                </svg>
+                                <span>清空</span>
+                            </button>
+                            <button id="paste-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                                </svg>
+                                <span>粘贴</span>
+                            </button>
+                            <button id="humanize-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path>
+                                    <line x1="16" y1="8" x2="2" y2="22"></line>
+                                    <line x1="17.5" y1="15" x2="9" y2="15"></line>
+                                </svg>
+                                <span>开始转换</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-area-container">
+                    <div class="output-container">
+                        <textarea placeholder="转换后的文本将在这里显示..." readonly></textarea>
+                        <div class="loading-overlay">
+                            <div class="loading-spinner"></div>
+                            <div class="loading-text">AI正在思考并优化您的文本...</div>
+                            <div class="loading-time">预计等待时间：计算中...</div>
+                        </div>
+                        <div class="output-footer">
+                            <span class="word-count">0 words</span>
+                            <button class="copy-btn" title="复制文本">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                                <span>复制</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <section class="seo-content">
+            <div class="seo-section">
+                <h2>免费使用 humanizador de ia</h2>
+                <p class="highlight-text">完全免费使用我们的AI人性化工具，轻松绕过所有AI检测器，包括 Originality.ai、GPTZero、Turnitin 等。</p>
+            </div>
+
+            <div class="seo-section">
+                <h2>humanizador de ia：您的首选AI文本人性化转换工具</h2>
+                <p>humanizador de ia 是领先的免费在线平台，专门将AI生成的文本转换为人性化内容。作为AI人性化工具和AI转人类文本转换器，我们的工具擅长重写AI作者创作的文本，消除机器人般的语气。我们的人性化AI文本工具输出100%原创内容，可以绕过目前所有的AI检测系统。</p>
+                
+                <p>我们先进的专有算法可以巧妙地将来自ChatGPT、Google Bard、Microsoft Bing、QuillBot、Grammarly、Jasper.ai、Copy.ai等AI来源的文本转换为自然、人性化的内容。这个过程保留了原始含义、上下文，最重要的是保持了搜索引擎优化（SEO）价值。使用我们的AI人性化工具，创作出与人类写作无法区分的内容。</p>
+            </div>
+
+            <div class="seo-section">
+                <h2>了解AI文本人性化</h2>
+                <p>人性化AI文本是一门将AI生成的内容优化得更自然、更贴近人类阅读习惯的艺术。这种转换确保内容具有吸引力、相关性和清晰度，去除任何机器人般的特征。人性化AI文本包含多个要素，如自然语言使用、共情能力、个性化、互动性、简单性和文化敏感性，所有这些都有助于将AI文本转换为自然、人性化的内容。</p>
+            </div>
+
+            <div class="seo-section">
+                <h2>如何免费人性化AI文本？</h2>
+                <div class="steps-container">
+                    <p>使用 humanizador de ia，轻松免费地实现AI文本人性化，只需按照以下简单步骤：</p>
+                    <ol>
+                        <li>在浏览器中访问 https://www.humanizador.pro。我们的工具兼容所有浏览器。</li>
+                        <li>在指定区域输入或粘贴AI生成的文本。</li>
+                        <li>完成验证码以确认您是人类用户。</li>
+                        <li>点击"开始转换"按钮开始转换。这可能需要一点时间，请耐心等待。</li>
+                        <li>完成后，查看人性化、无抄袭的输出内容，确保没有任何机器人般的语气。</li>
+                        <li>重复步骤3至5，直到从我们的AI人性化工具获得满意的结果。</li>
+                        <li>对结果满意后，复制人性化文本，根据需要编辑，然后自由使用。</li>
+                        <li>要开始新的转换，点击"清空"按钮。</li>
+                    </ol>
+                    <p class="conclusion-text">就是这么简单！获得完全像人类撰写的文本，不会被AI检测器发现，并针对您的需求进行了优化。</p>
+                </div>
+            </div>
+
+            <div class="seo-section">
+                <h2>humanizador de ia 工具的核心优势</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <h3>智能人性化处理</h3>
+                        <p>将AI生成的文本转换为真实自然的人类语言，确保内容的真实性和可读性。</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>100% 原创保证</h3>
+                        <p>独特的算法确保每一篇内容都是完全原创，轻松通过任何文本查重检测。</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>完美绕过AI检测</h3>
+                        <p>经过处理的内容完全模拟人类写作风格，能够绕过所有主流AI检测工具。</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>SEO友好优化</h3>
+                        <p>智能保留关键词和语义结构，确保内容在搜索引擎中的良好表现。</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>极致转换效率</h3>
+                        <p>快速处理大量文本，节省时间和人力成本，显著提升内容创作效率。</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>多语言支持</h3>
+                        <p>支持中文、英文等多种语言的文本处理，满足不同语言的内容创作需求。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="seo-section">
+                <h2>适用人群 - 为各行各业提供支持</h2>
+                <div class="users-grid">
+                    <div class="user-card">
+                        <h3>内容创作者</h3>
+                        <p>包括自媒体、博主、文案写手等，快速生成原创度高的优质内容。</p>
+                    </div>
+                    <div class="user-card">
+                        <h3>营销人员</h3>
+                        <p>制作营销文案、产品描述、广告文本等，提升营销内容的说服力。</p>
+                    </div>
+                    <div class="user-card">
+                        <h3>学生群体</h3>
+                        <p>优化学术论文、作业和研究报告，确保内容原创且符合学术要求。</p>
+                    </div>
+                    <div class="user-card">
+                        <h3>企业管理者</h3>
+                        <p>改进商务邮件、公司公告、项目报告等商务文档的表达方式。</p>
+                    </div>
+                    <div class="user-card">
+                        <h3>教育工作者</h3>
+                        <p>优化教学材料、课程内容，使教学资料更易于学生理解和接受。</p>
+                    </div>
+                    <div class="user-card">
+                        <h3>专业写作者</h3>
+                        <p>包括记者、作家、编辑等，快速生成初稿并进行人性化优化。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="seo-section">
+                <h2>工具特色功能</h2>
+                <div class="features-list">
+                    <div class="feature-item">
+                        <h3>简单易用的界面</h3>
+                        <p>无需特殊培训，输入文本即可一键转换，操作简单直观。</p>
+                    </div>
+                    <div class="feature-item">
+                        <h3>免费无限制使用</h3>
+                        <p>完全免费，无需注册，无使用次数限制，随时随地使用。</p>
+                    </div>
+                    <div class="feature-item">
+                        <h3>跨平台兼容</h3>
+                        <p>支持所有主流浏览器，完美适配电脑、手机等各种设备。</p>
+                    </div>
+                    <div class="feature-item">
+                        <h3>智能情感分析</h3>
+                        <p>理解文本情感倾向，确保转换后的内容保持适当的情感表达。</p>
+                    </div>
+                    <div class="feature-item">
+                        <h3>隐私安全保障</h3>
+                        <p>严格保护用户数据和内容安全，确保信息不被泄露。</p>
+                    </div>
+                    <div class="feature-item">
+                        <h3>快速高效处理</h3>
+                        <p>强大的服务器确保快速处理文本，无需长时间等待。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="seo-section">
+                <h2>常见问题解答 (FAQ)</h2>
+                <div class="faq-container">
+                    <div class="faq-item">
+                        <h3>什么是 humanizador de ia？</h3>
+                        <p>humanizador de ia 是领先的在线AI文本人性化转换工具，专门将AI生成的内容转换为自然流畅的人类语言。它适用于各种应用场景，确保内容真实可信，不带有机械化的语气。</p>
+                    </div>
+
+                    <div class="faq-item">
+                        <h3>humanizador de ia 是如何工作的？</h3>
+                        <p>我们的工具使用先进的算法重写AI生成的内容，在保持原始含义和上下文的同时，添加自然的人性化表达。它不仅对搜索引擎友好，还能有效绕过AI检测。</p>
+                    </div>
+
+                    <div class="faq-item">
+                        <h3>使用 humanizador de ia 需要付费吗？</h3>
+                        <p>不需要，我们的工具完全免费，提供无限次使用，没有任何隐藏收费。</p>
+                    </div>
+
+                    <div class="faq-item">
+                        <h3>支持多语言处理吗？</h3>
+                        <p>是的，我们的工具支持多种语言的文本转换，包括中文、英文等主流语言，满足不同用户的需求。</p>
+                    </div>
+
+                    <div class="faq-item">
+                        <h3>是否支持所有浏览器和设备？</h3>
+                        <p>是的，我们的工具兼容所有主流浏览器，并针对不同设备（包括电脑、笔记本、平板和手机）进行了优化。</p>
+                    </div>
+
+                    <div class="faq-item">
+                        <h3>使用时需要注册账号吗？</h3>
+                        <p>不需要，无需注册或登录，您可以直接使用工具，节省时间。</p>
+                    </div>
+
+                    <div class="faq-item">
+                        <h3>如何保证内容的安全性？</h3>
+                        <p>我们高度重视用户内容的安全性和隐私性，采用严格的保护措施确保您的内容安全且私密。</p>
+                    </div>
+
+                    <div class="faq-item">
+                        <h3>能提升内容的SEO效果吗？</h3>
+                        <p>是的，我们的工具在转换过程中会保留关键词并优化内容结构，提升内容在搜索引擎中的表现。</p>
+                    </div>
+
+                    <div class="faq-item">
+                        <h3>输出的内容是否原创？</h3>
+                        <p>完全原创。我们的工具保证生成的内容100%原创，确保独特性和唯一性。</p>
+                    </div>
+
+                    <div class="faq-item">
+                        <h3>能绕过AI检测工具吗？</h3>
+                        <p>是的，我们的工具生成的内容经过精心优化，能够有效绕过所有主流AI检测系统，使内容看起来完全像人类撰写。</p>
+                    </div>
+
+                    <div class="faq-item">
+                        <h3>会改变原文的含义吗？</h3>
+                        <p>不会。humanizador de ia 的核心优势之一就是在人性化处理的同时，完整保留原文的含义和上下文。</p>
+                    </div>
+
+                    <div class="faq-item">
+                        <h3>适合哪些人使用？</h3>
+                        <p>我们的工具适用范围广泛，包括内容创作者、营销人员、商业专业人士、学生、开发者、公关人员、社交媒体博主、研究人员、博主、电商从业者、教育工作者、非营利组织、自由撰稿人、播客制作者、法律从业者、人力资源专家、创意写手等各类用户。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <div class="footer-logo">
+                    <img src="logo-placeholder.png" alt="humanizador de ia" class="footer-logo-img">
+                    <span>humanizador de ia</span>
+                </div>
+                <p class="footer-description">
+                    使用最智能的AI人性化工具，将AI生成的内容转换为自然、人性化的文本
+                </p>
+            </div>
+            <div class="footer-section">
+                <h3>联系我们</h3>
+                <div class="contact-info">
+                    <p>邮箱：contact@humanizador.pro</p>
+                    <p>微信：humanizador-ai</p>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>使用条款</h3>
+                <ul class="footer-links">
+                    <li><a href="#">服务条款</a></li>
+                    <li><a href="#">隐私政策</a></li>
+                    <li><a href="#">免责声明</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 humanizador de ia. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html> 
