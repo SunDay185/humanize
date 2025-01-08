@@ -1,95 +1,175 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 获取DOM元素
     const modeButtons = document.querySelectorAll('.mode-btn');
     const inputTextarea = document.querySelector('.text-area-container:first-child textarea');
-    const outputTextarea = document.querySelector('.text-area-container:last-child textarea');
-    const clearBtn = document.getElementById('clear-btn');
-    const pasteBtn = document.getElementById('paste-btn');
+    const outputTextarea = document.querySelector('.output-container textarea');
     const humanizeBtn = document.getElementById('humanize-btn');
     const copyBtn = document.querySelector('.copy-btn');
+    const clearBtn = document.getElementById('clear-btn');
+    const pasteBtn = document.getElementById('paste-btn');
     const wordCounts = document.querySelectorAll('.word-count');
-    const loadingOverlay = document.querySelector('.loading-overlay');
 
-    // 复制文本的通用函数
-    async function copyText(text, button) {
-        try {
-            await navigator.clipboard.writeText(text);
-            button.classList.add('copied');
-            const prevHtml = button.innerHTML;
-            button.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-                <span>已复制</span>
-            `;
-            setTimeout(() => {
-                button.classList.remove('copied');
-                button.innerHTML = prevHtml;
-            }, 2000);
-        } catch (err) {
-            alert('无法复制到剪贴板，请手动复制。');
+    // Mapeo de modos para la API
+    const modeMapping = {
+        'Gratuito': 'free',
+        'Estándar': 'standard',
+        'Académico': 'academic',
+        'Sencillo': 'simple',
+        'Formal': 'formal',
+        'Informal': 'informal',
+        'Expandir': 'expand',
+        'Reducir': 'shorten'
+    };
+
+    // Mostrar mensaje de error
+    function showError(message) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message';
+        errorDiv.textContent = message;
+        document.querySelector('.editor-container').appendChild(errorDiv);
+        
+        setTimeout(() => {
+            errorDiv.remove();
+        }, 3000);
+    }
+
+    // Mostrar estado de carga
+    function showLoading(waitTime) {
+        const loadingOverlay = document.querySelector('.loading-overlay');
+        const loadingText = document.querySelector('.loading-text');
+        const loadingTime = document.querySelector('.loading-time');
+        
+        loadingOverlay.style.display = 'flex';
+        loadingText.textContent = 'La IA está procesando y optimizando su texto...';
+        
+        if (waitTime) {
+            let timeLeft = Math.ceil(waitTime);
+            loadingTime.textContent = `Tiempo estimado de espera: ${timeLeft} segundos`;
+            
+            // Actualizar el tiempo restante cada segundo
+            const countdownInterval = setInterval(() => {
+                timeLeft--;
+                if (timeLeft > 0) {
+                    loadingTime.textContent = `Tiempo estimado de espera: ${timeLeft} segundos`;
+                } else {
+                    clearInterval(countdownInterval);
+                }
+            }, 1000);
+        } else {
+            loadingTime.textContent = 'Tiempo estimado de espera: calculando...';
         }
     }
 
-    // 更新字数统计
+    // Ocultar estado de carga
+    function hideLoading() {
+        const loadingOverlay = document.querySelector('.loading-overlay');
+        loadingOverlay.style.display = 'none';
+    }
+
+    // Actualizar contador de palabras
     function updateWordCount(textarea, countElement) {
         const text = textarea.value;
         const wordCount = text.trim() ? text.trim().split(/\s+/).length : 0;
-        countElement.textContent = `${wordCount} words`;
+        countElement.textContent = `${wordCount} palabras`;
     }
 
-    // 计算预计等待时间
+    // Calcular tiempo de espera
     function calculateWaitTime(text) {
-        // 基础处理时间（秒）
-        const baseTime = 5;
-        // 根据文本长度增加时间
+        const baseTime = 5; // Tiempo base en segundos
         const wordsCount = text.trim().split(/\s+/).length;
-        const lengthTime = Math.ceil(wordsCount / 100) * 2; // 每100字增加2秒
-        // 总时间
+        const lengthTime = Math.ceil(wordsCount / 100) * 2; // 2 segundos adicionales por cada 100 palabras
         const totalTime = baseTime + lengthTime;
-        return Math.min(totalTime, 30); // 最长显示30秒
+        return Math.min(totalTime, 30); // Máximo 30 segundos
     }
 
-    // 更新等待时间显示
-    function updateWaitingTime(seconds) {
-        const loadingTime = document.querySelector('.loading-time');
-        loadingTime.textContent = `预计等待时间：${seconds} 秒`;
+    // Validar longitud del texto
+    function validateText(text) {
+        const MAX_LENGTH = 5000;
+        if (text.length > MAX_LENGTH) {
+            throw new Error(`El texto excede el límite (máximo ${MAX_LENGTH} caracteres)`);
+        }
+        return true;
     }
 
-    // 显示加载动画
-    function showLoading(waitTime) {
-        loadingOverlay.classList.add('active');
-        outputTextarea.value = '';  // 清空输出框
-        updateWaitingTime(waitTime);
+    // Función de procesamiento de texto
+    async function humanizeText(text) {
+        const displayMode = document.querySelector('.mode-btn.active').textContent;
+        const mode = modeMapping[displayMode] || 'free'; // Usar el modo mapeado o 'free' por defecto
         
-        // 倒计时更新
-        let timeLeft = waitTime;
-        const countdownInterval = setInterval(() => {
-            timeLeft--;
-            if (timeLeft > 0) {
-                updateWaitingTime(timeLeft);
-            } else {
-                clearInterval(countdownInterval);
+        try {
+            const response = await fetch('http://127.0.0.1:5000/api/humanize', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    text: text,
+                    mode: mode
+                })
+            });
+            
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.error || 'Error en la respuesta del servidor');
             }
-        }, 1000);
+            
+            const data = await response.json();
+            if (!data.success) {
+                throw new Error(data.error || 'Error en el procesamiento');
+            }
+            
+            return data.result;
+        } catch (error) {
+            console.error('Error en la llamada API:', error);
+            throw new Error(error.message || 'Error al procesar el texto, por favor intente nuevamente');
+        }
     }
 
-    // 隐藏加载动画
-    function hideLoading() {
-        loadingOverlay.classList.remove('active');
-    }
+    // Copiar texto
+    copyBtn.addEventListener('click', () => {
+        const text = outputTextarea.value;
+        if (!text) {
+            showError('No hay texto para copiar');
+            return;
+        }
 
-    // 监听输入框变化
-    inputTextarea.addEventListener('input', () => {
-        updateWordCount(inputTextarea, wordCounts[0]);
+        navigator.clipboard.writeText(text).then(() => {
+            const originalContent = copyBtn.innerHTML;
+            copyBtn.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>Copiado</span>
+            `;
+            
+            setTimeout(() => {
+                copyBtn.innerHTML = originalContent;
+            }, 2000);
+        }).catch(() => {
+            showError('Error al copiar el texto');
+        });
     });
 
-    // 监听输出框变化
-    outputTextarea.addEventListener('input', () => {
+    // Pegar texto
+    pasteBtn.addEventListener('click', async () => {
+        try {
+            const text = await navigator.clipboard.readText();
+            inputTextarea.value = text;
+            updateWordCount(inputTextarea, wordCounts[0]);
+        } catch (error) {
+            showError('Error al pegar el texto. Por favor, pegue manualmente');
+        }
+    });
+
+    // Limpiar texto
+    clearBtn.addEventListener('click', () => {
+        inputTextarea.value = '';
+        outputTextarea.value = '';
+        updateWordCount(inputTextarea, wordCounts[0]);
         updateWordCount(outputTextarea, wordCounts[1]);
     });
 
-    // 模式选择功能
+    // Selección de modo
     modeButtons.forEach(button => {
         button.addEventListener('click', () => {
             modeButtons.forEach(btn => btn.classList.remove('active'));
@@ -97,71 +177,25 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 清空功能
-    clearBtn.addEventListener('click', () => {
-        inputTextarea.value = '';
+    // Escuchar cambios en la entrada
+    inputTextarea.addEventListener('input', () => {
         updateWordCount(inputTextarea, wordCounts[0]);
     });
 
-    // 粘贴功能
-    pasteBtn.addEventListener('click', async () => {
-        try {
-            const text = await navigator.clipboard.readText();
-            inputTextarea.value = text;
-            updateWordCount(inputTextarea, wordCounts[0]);
-        } catch (err) {
-            alert('无法访问剪贴板，请手动粘贴文本。');
-        }
+    outputTextarea.addEventListener('input', () => {
+        updateWordCount(outputTextarea, wordCounts[1]);
     });
 
-    // 复制功能
-    copyBtn.addEventListener('click', () => {
-        copyText(outputTextarea.value, copyBtn);
-    });
-
-    // 显示错误消息
-    function showError(message) {
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'error-message';
-        errorDiv.innerHTML = `
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="12" y1="8" x2="12" y2="12"></line>
-                <line x1="12" y1="16" x2="12.01" y2="16"></line>
-            </svg>
-            <span>${message}</span>
-        `;
-        document.body.appendChild(errorDiv);
-        
-        // 3秒后自动消失
-        setTimeout(() => {
-            errorDiv.classList.add('fade-out');
-            setTimeout(() => errorDiv.remove(), 300);
-        }, 3000);
-    }
-
-    // 检查文本长度
-    function validateText(text) {
-        const MAX_LENGTH = 5000;
-        if (text.length > MAX_LENGTH) {
-            throw new Error(`文本长度超过限制（最大${MAX_LENGTH}字符）`);
-        }
-        return true;
-    }
-
-    // 人性化处理功能
+    // Procesar texto
     humanizeBtn.addEventListener('click', async () => {
         const text = inputTextarea.value;
         if (!text.trim()) {
-            showError('请先输入或粘贴需要处理的文本');
+            showError('Por favor, ingrese o pegue el texto que desea procesar');
             return;
         }
 
         try {
-            // 验证文本长度
             validateText(text);
-            
-            // 计算等待时间并显示加载状态
             const waitTime = calculateWaitTime(text);
             humanizeBtn.disabled = true;
             humanizeBtn.innerHTML = `
@@ -175,7 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
                     <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
                 </svg>
-                <span>处理中...</span>
+                <span>Procesando...</span>
             `;
             showLoading(waitTime);
             
@@ -183,8 +217,8 @@ document.addEventListener('DOMContentLoaded', () => {
             outputTextarea.value = processedText;
             updateWordCount(outputTextarea, wordCounts[1]);
         } catch (error) {
-            showError(error.message || '处理文本时出现错误，请稍后重试');
-            console.error('处理错误:', error);
+            showError(error.message || 'Error al procesar el texto, por favor intente nuevamente');
+            console.error('Error de procesamiento:', error);
         } finally {
             hideLoading();
             humanizeBtn.disabled = false;
@@ -194,42 +228,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     <line x1="16" y1="8" x2="2" y2="22"></line>
                     <line x1="17.5" y1="15" x2="9" y2="15"></line>
                 </svg>
-                <span>开始转换</span>
+                <span>Convertir</span>
             `;
         }
     });
-});
-
-// 文本处理函数
-async function humanizeText(text) {
-    const mode = document.querySelector('.mode-btn.active').textContent.toLowerCase();
-    
-    try {
-        const response = await fetch('http://localhost:5000/api/humanize', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({
-                text,
-                mode
-            })
-        });
-        
-        const data = await response.json();
-        
-        if (!response.ok) {
-            throw new Error(data.error || '服务器响应错误');
-        }
-        
-        if (!data.success) {
-            throw new Error(data.error || '处理失败');
-        }
-        
-        return data.result;
-    } catch (error) {
-        console.error('API调用错误:', error);
-        throw new Error(error.message || '处理文本时出现错误，请稍后重试');
-    }
-} 
+}); 
