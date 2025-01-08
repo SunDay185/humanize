@@ -72,3 +72,6 @@
 [2025-01-08 18:42:08] IP: 127.0.0.1, Length: 344, Mode: gratuito
 [2025-01-08 18:42:39] IP: 127.0.0.1, Length: 344, Mode: free
 [2025-01-08 18:46:27] IP: 127.0.0.1, Length: 344, Mode: gratuito
+[2025-01-08 18:52:51] IP: 127.0.0.1, Length: 341, Mode: gratuito
+[2025-01-08 19:33:25] IP: 127.0.0.1, Length: 342, Mode: free
+[2025-01-08 20:31:12] IP: 127.0.0.1, Length: 342, Mode: free
