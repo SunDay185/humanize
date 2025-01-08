@@ -1,9 +1,14 @@
 import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from dotenv import load_dotenv
 import requests
 import re
+import time
+from datetime import datetime, timedelta
+from collections import defaultdict
 
 # 加载环境变量
 load_dotenv()
@@ -12,9 +17,67 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)  # 启用跨域支持
 
+# 初始化限制器
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=["100 per day", "10 per hour"],
+    storage_uri="memory://"
+)
+
 # 配置API密钥
 DEEPSEEK_API_KEY = os.getenv('DEEPSEEK_API_KEY')
 DEEPSEEK_API_BASE = os.getenv('DEEPSEEK_API_BASE')
+
+# 安全配置
+MAX_TEXT_LENGTH = 5000  # 最大文本长度
+MAX_REQUESTS_PER_IP = 100  # 每个IP每天的最大请求次数
+RATE_LIMIT_RESET_INTERVAL = 86400  # 24小时，以秒为单位
+
+# IP请求计数器
+ip_request_count = defaultdict(int)
+ip_last_reset = defaultdict(float)
+
+def check_ip_limit():
+    """检查IP请求限制"""
+    ip = get_remote_address()
+    current_time = time.time()
+    
+    # 检查是否需要重置计数器
+    if current_time - ip_last_reset[ip] >= RATE_LIMIT_RESET_INTERVAL:
+        ip_request_count[ip] = 0
+        ip_last_reset[ip] = current_time
+    
+    # 检查请求次数
+    if ip_request_count[ip] >= MAX_REQUESTS_PER_IP:
+        remaining_time = RATE_LIMIT_RESET_INTERVAL - (current_time - ip_last_reset[ip])
+        raise Exception(f"已达到每日请求限制，请在{int(remaining_time/3600)}小时后重试")
+    
+    ip_request_count[ip] += 1
+
+def validate_text(text):
+    """验证文本是否符合要求"""
+    if len(text) > MAX_TEXT_LENGTH:
+        raise Exception(f"文本长度超过限制（最大{MAX_TEXT_LENGTH}字符）")
+    
+    # 检查是否包含敏感内容
+    sensitive_patterns = [
+        r'(hack|crack|exploit)',
+        r'(password|密码)\s*[=:]\s*\S+',
+        r'(api[-_]?key|token)\s*[=:]\s*\S+'
+    ]
+    
+    for pattern in sensitive_patterns:
+        if re.search(pattern, text, re.IGNORECASE):
+            raise Exception("检测到敏感内容，请修改后重试")
+
+def log_request(ip, text_length, mode):
+    """记录请求信息"""
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    log_entry = f"[{timestamp}] IP: {ip}, Length: {text_length}, Mode: {mode}\n"
+    
+    with open("request_log.txt", "a", encoding="utf-8") as f:
+        f.write(log_entry)
 
 def detect_language(text):
     """检测文本语言类型"""
@@ -116,40 +179,56 @@ def call_deepseek_api(prompt):
         raise
 
 @app.route('/api/humanize', methods=['POST'])
+@limiter.limit("10 per minute")  # 添加每分钟请求限制
 def humanize_text():
     try:
+        # 检查IP限制
+        check_ip_limit()
+        
         data = request.json
         text = data.get('text')
         mode = data.get('mode', 'free').lower()
-
+        
         if not text:
             return jsonify({
                 'success': False,
                 'error': '请提供需要处理的文本'
             }), 400
-
+            
+        # 验证文本
+        validate_text(text)
+        
+        # 记录请求
+        log_request(get_remote_address(), len(text), mode)
+        
         prompt = get_prompt_by_mode(mode, text)
-
+        
         try:
             result = call_deepseek_api(prompt)
             return jsonify({
                 'success': True,
                 'result': result
             })
-
         except Exception as e:
-            print(f"API调用错误: {str(e)}")  # 添加错误日志
+            print(f"API调用错误: {str(e)}")
             return jsonify({
                 'success': False,
                 'error': f'API调用失败: {str(e)}'
             }), 500
-
+            
     except Exception as e:
-        print(f"服务器错误: {str(e)}")  # 添加错误日志
+        print(f"服务器错误: {str(e)}")
         return jsonify({
             'success': False,
-            'error': f'服务器错误: {str(e)}'
-        }), 500
+            'error': str(e)
+        }), 429 if "限制" in str(e) else 500
+
+@app.errorhandler(429)
+def ratelimit_handler(e):
+    return jsonify({
+        'success': False,
+        'error': '请求过于频繁，请稍后重试'
+    }), 429
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000) 

@@ -119,31 +119,83 @@ document.addEventListener('DOMContentLoaded', () => {
         copyText(outputTextarea.value, copyBtn);
     });
 
+    // 显示错误消息
+    function showError(message) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message';
+        errorDiv.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <span>${message}</span>
+        `;
+        document.body.appendChild(errorDiv);
+        
+        // 3秒后自动消失
+        setTimeout(() => {
+            errorDiv.classList.add('fade-out');
+            setTimeout(() => errorDiv.remove(), 300);
+        }, 3000);
+    }
+
+    // 检查文本长度
+    function validateText(text) {
+        const MAX_LENGTH = 5000;
+        if (text.length > MAX_LENGTH) {
+            throw new Error(`文本长度超过限制（最大${MAX_LENGTH}字符）`);
+        }
+        return true;
+    }
+
     // 人性化处理功能
     humanizeBtn.addEventListener('click', async () => {
         const text = inputTextarea.value;
         if (!text.trim()) {
-            alert('请先输入或粘贴需要处理的文本');
+            showError('请先输入或粘贴需要处理的文本');
             return;
         }
 
-        // 计算等待时间并显示加载状态
-        const waitTime = calculateWaitTime(text);
-        humanizeBtn.disabled = true;
-        humanizeBtn.textContent = '处理中...';
-        showLoading(waitTime);
-        
         try {
+            // 验证文本长度
+            validateText(text);
+            
+            // 计算等待时间并显示加载状态
+            const waitTime = calculateWaitTime(text);
+            humanizeBtn.disabled = true;
+            humanizeBtn.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="loading-icon">
+                    <line x1="12" y1="2" x2="12" y2="6"></line>
+                    <line x1="12" y1="18" x2="12" y2="22"></line>
+                    <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
+                    <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
+                    <line x1="2" y1="12" x2="6" y2="12"></line>
+                    <line x1="18" y1="12" x2="22" y2="12"></line>
+                    <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
+                    <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
+                </svg>
+                <span>处理中...</span>
+            `;
+            showLoading(waitTime);
+            
             const processedText = await humanizeText(text);
             outputTextarea.value = processedText;
             updateWordCount(outputTextarea, wordCounts[1]);
         } catch (error) {
-            alert('处理文本时出现错误，请稍后重试。');
-            console.error('API调用错误:', error);
+            showError(error.message || '处理文本时出现错误，请稍后重试');
+            console.error('处理错误:', error);
         } finally {
             hideLoading();
             humanizeBtn.disabled = false;
-            humanizeBtn.textContent = '开始转换';
+            humanizeBtn.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path>
+                    <line x1="16" y1="8" x2="2" y2="22"></line>
+                    <line x1="17.5" y1="15" x2="9" y2="15"></line>
+                </svg>
+                <span>开始转换</span>
+            `;
         }
     });
 });
@@ -165,12 +217,12 @@ async function humanizeText(text) {
             })
         });
         
+        const data = await response.json();
+        
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || '服务器响应错误');
+            throw new Error(data.error || '服务器响应错误');
         }
         
-        const data = await response.json();
         if (!data.success) {
             throw new Error(data.error || '处理失败');
         }
