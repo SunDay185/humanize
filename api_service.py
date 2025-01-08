@@ -80,37 +80,76 @@ def log_request(ip, text_length, mode):
         f.write(log_entry)
 
 def detect_language(text):
-    """检测文本语言类型"""
-    # 简单的语言检测：检查是否包含中文字符
-    if re.search(r'[\u4e00-\u9fff]', text):
+    """
+    检测文本语言
+    优先级：西班牙语 > 英语 > 中文
+    """
+    # 检测西班牙语特征（包括重音符号和特殊标点）
+    spanish_chars = set('áéíóúüñ¿¡àèìòùâêîôûäëïöüãõ')
+    spanish_words = {'el', 'la', 'los', 'las', 'un', 'una', 'unos', 'unas', 'y', 'o', 'pero', 'porque', 'cuando', 'donde', 'como'}
+    
+    # 将文本分割成单词
+    words = set(text.lower().split())
+    
+    # 如果包含西班牙语特殊字符或常用词，判定为西班牙语
+    if any(char in spanish_chars for char in text.lower()) or any(word in spanish_words for word in words):
+        return 'es'
+    
+    # 检测英语特征（基本拉丁字母）
+    english_chars = set('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
+    text_chars = set(text.replace(' ', ''))
+    if text_chars.issubset(english_chars):
+        return 'en'
+    
+    # 检测中文字符
+    if any('\u4e00' <= char <= '\u9fff' for char in text):
         return 'zh'
-    # 如果不包含中文字符，默认为英文
-    return 'en'
+    
+    # 默认使用西班牙语
+    return 'es'
 
-def get_prompt_by_mode(mode, text):
-    """根据模式和语言生成对应的提示词"""
-    language = detect_language(text)
-    
-    if language == 'zh':
-        prompts = {
-            'free': f"请帮我改写以下中文文本，使其更自然、更人性化，同时确保不会被AI检测工具识别。请保持输出为中文：\n{text}",
-            'academic': f"请将以下中文文本改写成学术风格，使用更专业的词汇和表达方式，同时确保内容自然且不会被AI检测工具识别。请保持输出为中文：\n{text}",
-            'formal': f"请将以下中文文本改写成正式的商务风格，使用得体的措辞，同时确保自然且不会被AI检测工具识别。请保持输出为中文：\n{text}",
-            'simple': f"请将以下中文文本改写成简单易懂的风格，使用日常用语，同时确保自然且不会被AI检测工具识别。请保持输出为中文：\n{text}",
-            'expand': f"请扩展以下中文文本，添加更多细节和解释，使其更丰富，同时确保自然且不会被AI检测工具识别。请保持输出为中文：\n{text}",
-            'shorten': f"请精简以下中文文本，保持核心意思但使用更简洁的表达，同时确保自然且不会被AI检测工具识别。请保持输出为中文：\n{text}",
+def get_prompt_by_mode_and_language(mode, language, text):
+    """
+    根据模式和语言获取相应的提示词
+    """
+    base_prompts = {
+        'es': {
+            'free': "Por favor, reescribe el siguiente texto en español para hacerlo más natural y humano, evitando la detección de IA pero manteniendo el significado original. Asegúrate de mantener un estilo fluido y natural:",
+            'standard': "Por favor, reescribe el siguiente texto en español usando un estilo estándar y profesional, manteniendo un tono equilibrado y formal:",
+            'academic': "Por favor, reescribe el siguiente texto en español usando un estilo académico y formal, adecuado para publicaciones académicas y documentos científicos:",
+            'simple': "Por favor, simplifica el siguiente texto en español para hacerlo más fácil de entender, usando un lenguaje claro y directo, manteniendo la esencia del mensaje:",
+            'formal': "Por favor, reescribe el siguiente texto en español usando un estilo formal y profesional, adecuado para comunicaciones empresariales y documentos oficiales:",
+            'informal': "Por favor, reescribe el siguiente texto en español usando un estilo casual y conversacional, manteniendo un tono amigable y cercano:",
+            'expand': "Por favor, expande el siguiente texto en español, agregando más detalles, ejemplos y explicaciones mientras mantienes un estilo natural y coherente:",
+            'shorten': "Por favor, resume el siguiente texto en español, manteniendo los puntos principales y la información esencial mientras reduces su longitud:"
+        },
+        'en': {
+            'free': "Please rewrite the following English text to make it more natural and human-like, while avoiding AI detection:",
+            'standard': "Please rewrite the following English text using a standard, professional style with a balanced tone:",
+            'academic': "Please rewrite the following English text using an academic and formal style suitable for scholarly publications:",
+            'simple': "Please simplify the following English text to make it easier to understand, using clear and direct language:",
+            'formal': "Please rewrite the following English text using a formal, professional style suitable for business communications:",
+            'informal': "Please rewrite the following English text using a casual, conversational style while maintaining a friendly tone:",
+            'expand': "Please expand the following English text by adding more details and explanations while maintaining a natural style:",
+            'shorten': "Please summarize the following English text, keeping the main points while reducing length:"
+        },
+        'zh': {
+            'free': "请将以下中文文本改写得更加自然、人性化，同时避免AI检测：",
+            'standard': "请使用标准的专业风格改写以下中文文本，保持平衡的语气：",
+            'academic': "请使用学术和正式的风格改写以下中文文本，适合学术出版物：",
+            'simple': "请简化以下中文文本，使用清晰直接的语言，使其更容易理解：",
+            'formal': "请使用正式的专业风格改写以下中文文本，适合商务沟通：",
+            'informal': "请使用轻松随意的对话风格改写以下中文文本，保持友好的语气：",
+            'expand': "请扩展以下中文文本，添加更多细节和解释，同时保持自然的风格：",
+            'shorten': "请总结以下中文文本，保持主要观点的同时减少长度："
         }
-    else:
-        prompts = {
-            'free': f"Please rewrite the following English text to make it more natural and human-like, ensuring it won't be detected by AI detection tools. Keep the output in English:\n{text}",
-            'academic': f"Please rewrite the following English text in an academic style, using more professional vocabulary while ensuring it sounds natural and won't be detected by AI detection tools. Keep the output in English:\n{text}",
-            'formal': f"Please rewrite the following English text in a formal business style, using appropriate expressions while ensuring it sounds natural and won't be detected by AI detection tools. Keep the output in English:\n{text}",
-            'simple': f"Please rewrite the following English text in a simple and easy-to-understand style, using everyday language while ensuring it won't be detected by AI detection tools. Keep the output in English:\n{text}",
-            'expand': f"Please expand the following English text by adding more details and explanations while ensuring it won't be detected by AI detection tools. Keep the output in English:\n{text}",
-            'shorten': f"Please shorten the following English text while maintaining the core message and ensuring it won't be detected by AI detection tools. Keep the output in English:\n{text}",
-        }
+    }
+
+    # 获取对应语言和模式的提示词
+    prompts = base_prompts.get(language, base_prompts['es'])
+    prompt = prompts.get(mode, prompts['free'])
     
-    return prompts.get(mode, prompts['free'])
+    return prompt + "\n\n" + text
 
 def get_system_prompt(language):
     """根据语言获取系统提示词"""
@@ -129,9 +168,9 @@ def call_deepseek_api(prompt):
         }
         
         data = {
-            "model": "deepseek-chat",  # 使用正确的模型名称
+            "model": "deepseek-chat",
             "messages": [
-                {"role": "system", "content": get_system_prompt(language)},
+                {"role": "system", "content": "你是一个专业的文本改写助手。请直接输出改写后的文本，不要添加任何评论、解释或其他内容。"},
                 {"role": "user", "content": prompt}
             ],
             "temperature": 0.7,
@@ -139,22 +178,14 @@ def call_deepseek_api(prompt):
             "stream": False
         }
         
-        api_url = "https://api.deepseek.com/v1/chat/completions"  # 使用完整的URL
-        print(f"正在调用DeepSeek API")  # 添加调试日志
-        print(f"API请求URL: {api_url}")  # 添加URL日志
-        print(f"请求头: {headers}")  # 添加请求头日志
-        print(f"请求数据: {data}")  # 添加请求数据日志
-        
+        api_url = "https://api.deepseek.com/v1/chat/completions"
         response = requests.post(
             api_url,
             headers=headers,
             json=data,
             timeout=30,
-            verify=True  # 启用SSL验证
+            verify=True
         )
-        
-        print(f"API响应状态码: {response.status_code}")  # 添加调试日志
-        print(f"API响应内容: {response.text}")  # 添加响应内容日志
         
         if response.status_code != 200:
             error_message = f"API调用失败: HTTP {response.status_code}"
@@ -163,19 +194,26 @@ def call_deepseek_api(prompt):
                 error_message += f" - {error_detail.get('error', {}).get('message', str(error_detail))}"
             except:
                 error_message += f" - {response.text}"
-            print(error_message)  # 添加调试日志
             raise Exception(error_message)
-            
+        
         result = response.json()
-        return result['choices'][0]['message']['content']
+        # 获取API返回的文本内容
+        content = result['choices'][0]['message']['content']
+        
+        # 清理文本，移除可能的前缀说明和后缀评论
+        content = content.strip()
+        # 如果内容以引号开始和结束，移除引号
+        if (content.startswith('"') and content.endswith('"')) or \
+           (content.startswith("'") and content.endswith("'")):
+            content = content[1:-1]
+        
+        return content
+        
     except requests.exceptions.Timeout:
-        print("API调用超时")
         raise Exception("API调用超时，请稍后重试")
     except requests.exceptions.RequestException as e:
-        print(f"网络请求错误: {str(e)}")
         raise Exception(f"网络请求错误: {str(e)}")
     except Exception as e:
-        print(f"DeepSeek API调用错误: {str(e)}")
         raise
 
 @app.route('/api/humanize', methods=['POST'])
@@ -201,7 +239,7 @@ def humanize_text():
         # 记录请求
         log_request(get_remote_address(), len(text), mode)
         
-        prompt = get_prompt_by_mode(mode, text)
+        prompt = get_prompt_by_mode_and_language(mode, detect_language(text), text)
         
         try:
             result = call_deepseek_api(prompt)
