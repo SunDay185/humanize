@@ -3,15 +3,8 @@
   "builds": [
     { "src": "api_service.py", "use": "@vercel/python" }
   ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "api_service.py"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/$1"
-    }
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api_service.py" }
   ],
   "headers": [
     {

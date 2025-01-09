@@ -24,10 +24,20 @@ limiter = Limiter(
 # 配置API密钥
 DEEPSEEK_API_KEY = os.environ.get('DEEPSEEK_API_KEY')
 if not DEEPSEEK_API_KEY:
-    raise ValueError("DEEPSEEK_API_KEY environment variable is not set")
+    print("警告: DEEPSEEK_API_KEY 环境变量未设置")
 
 # API基础URL
-DEEPSEEK_API_BASE = "https://api.deepseek.com/v1"  # 使用固定的API基础URL
+DEEPSEEK_API_BASE = "https://api.deepseek.com/v1"
+
+# 路由处理
+@app.route('/', defaults={'path': ''}, methods=['GET', 'POST', 'OPTIONS'])
+@app.route('/<path:path>', methods=['GET', 'POST', 'OPTIONS'])
+def catch_all(path):
+    if request.method == 'OPTIONS':
+        return '', 204
+    if path == 'api/humanize' or request.path == '/api/humanize':
+        return humanize_text()
+    return jsonify({'error': 'Not Found'}), 404
 
 # 安全配置
 MAX_TEXT_LENGTH = 5000  # 最大文本长度
