@@ -20,6 +20,10 @@
         {
             "src": "*.ico",
             "use": "@vercel/static"
+        },
+        {
+            "src": "*.png",
+            "use": "@vercel/static"
         }
     ],
     "routes": [
@@ -30,6 +34,10 @@
         {
             "src": "/favicon.ico",
             "dest": "/favicon.ico"
+        },
+        {
+            "src": "/(.*\\.(?:png|ico|js|css))",
+            "dest": "/$1"
         },
         {
             "src": "/(.*)",
