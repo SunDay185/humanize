@@ -3,11 +3,15 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from dotenv import load_dotenv
 import requests
 import re
 import time
 from datetime import datetime, timedelta
 from collections import defaultdict
+
+# 加载环境变量
+load_dotenv()
 
 # 初始化Flask应用
 app = Flask(__name__)
@@ -22,22 +26,8 @@ limiter = Limiter(
 )
 
 # 配置API密钥
-DEEPSEEK_API_KEY = os.environ.get('DEEPSEEK_API_KEY')
-if not DEEPSEEK_API_KEY:
-    print("警告: DEEPSEEK_API_KEY 环境变量未设置")
-
-# API基础URL
-DEEPSEEK_API_BASE = "https://api.deepseek.com/v1"
-
-# 路由处理
-@app.route('/', defaults={'path': ''}, methods=['GET', 'POST', 'OPTIONS'])
-@app.route('/<path:path>', methods=['GET', 'POST', 'OPTIONS'])
-def catch_all(path):
-    if request.method == 'OPTIONS':
-        return '', 204
-    if path == 'api/humanize' or request.path == '/api/humanize':
-        return humanize_text()
-    return jsonify({'error': 'Not Found'}), 404
+DEEPSEEK_API_KEY = os.getenv('DEEPSEEK_API_KEY')
+DEEPSEEK_API_BASE = os.getenv('DEEPSEEK_API_BASE')
 
 # 安全配置
 MAX_TEXT_LENGTH = 5000  # 最大文本长度

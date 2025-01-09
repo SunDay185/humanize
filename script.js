@@ -8,35 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const pasteBtn = document.getElementById('paste-btn');
     const wordCounts = document.querySelectorAll('.word-count');
 
-    // API URL配置
-    const getApiUrl = () => {
-        // 检查是否是本地文件系统
-        if (window.location.protocol === 'file:') {
-            return 'http://localhost:5000/api/humanize';
-        }
-        // 检查是否是本地开发服务器
-        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-            return 'http://localhost:5000/api/humanize';
-        }
-        // 生产环境使用相对路径，这样会自动使用当前域名
-        return `${window.location.origin}/api/humanize`;
-    };
-
-    const API_URL = getApiUrl();
-
-    // 显示开发环境提示
-    if (window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        const warningDiv = document.createElement('div');
-        warningDiv.className = 'warning-message';
-        warningDiv.style.cssText = 'background-color: #fff3cd; color: #856404; padding: 10px; margin: 10px; border-radius: 4px; text-align: center;';
-        warningDiv.innerHTML = `
-            <strong>开发环境提示：</strong><br>
-            请确保本地API服务器正在运行 (http://localhost:5000)<br>
-            ${window.location.protocol === 'file:' ? '建议使用本地服务器打开页面，而不是直接打开文件。' : ''}
-        `;
-        document.body.insertBefore(warningDiv, document.body.firstChild);
-    }
-
     // Mapeo de modos para la API
     const modeMapping = {
         'Gratuito': 'free',
@@ -122,10 +93,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Función de procesamiento de texto
     async function humanizeText(text) {
         const displayMode = document.querySelector('.mode-btn.active').textContent;
-        const mode = modeMapping[displayMode] || 'free';
+        const mode = modeMapping[displayMode] || 'free'; // Usar el modo mapeado o 'free' por defecto
         
         try {
-            const response = await fetch(API_URL, {
+            const response = await fetch('http://127.0.0.1:5000/api/humanize', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -138,33 +109,19 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             
             if (!response.ok) {
-                if (response.status === 404) {
-                    throw new Error('API服务器未找到，请确保后端服务正在运行');
-                }
-                const errorText = await response.text();
-                let errorMessage;
-                try {
-                    const errorData = JSON.parse(errorText);
-                    errorMessage = errorData.error || '服务器返回了一个错误';
-                } catch {
-                    errorMessage = `服务器错误 (${response.status}): ${errorText}`;
-                }
-                throw new Error(errorMessage);
+                const data = await response.json();
+                throw new Error(data.error || 'Error en la respuesta del servidor');
             }
             
             const data = await response.json();
             if (!data.success) {
-                throw new Error(data.error || '处理文本时发生错误');
+                throw new Error(data.error || 'Error en el procesamiento');
             }
             
             return data.result;
         } catch (error) {
-            console.error('API调用错误:', error);
-            // 如果是网络错误，提供更友好的错误信息
-            if (error.name === 'TypeError' && error.message === 'Failed to fetch') {
-                throw new Error('无法连接到API服务器，请检查网络连接或联系管理员');
-            }
-            throw new Error(error.message || '处理文本时发生错误，请稍后重试');
+            console.error('Error en la llamada API:', error);
+            throw new Error(error.message || 'Error al procesar el texto, por favor intente nuevamente');
         }
     }
 
