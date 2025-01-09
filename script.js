@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // API配置
     const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
         ? 'http://127.0.0.1:5000'
-        : 'https://humanize-sundays-projects-f9714b4b.vercel.app'; // Vercel部署的API域名
+        : ''; // 在生产环境中使用相对路径
 
     // Mostrar mensaje de error
     function showError(message) {
@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Función de procesamiento de texto
     async function humanizeText(text) {
         const displayMode = document.querySelector('.mode-btn.active').textContent;
-        const mode = modeMapping[displayMode] || 'free'; // Usar el modo mapeado o 'free' por defecto
+        const mode = modeMapping[displayMode] || 'free';
         
         try {
             const response = await fetch(`${API_BASE_URL}/api/humanize`, {
