@@ -1025,131 +1025,58 @@ footer {
 
 /* 移动端适配 */
 @media screen and (max-width: 768px) {
-    /* 标题区域优化 */
+    /* 页面标题和整体布局优化 */
+    .container {
+        padding: 1rem;
+        max-width: 100%;
+    }
+
     .page-title {
-        margin: 1rem auto;
-        padding: 10px;
+        font-size: 1.5rem;
+        margin-bottom: 0.8rem;
         text-align: center;
     }
 
-    .page-title h1 {
-        font-size: 1.8rem;
-        margin-bottom: 0.5rem;
-    }
-
-    .page-title p {
+    .page-description {
         font-size: 0.9rem;
-        line-height: 1.4;
+        line-height: 1.5;
+        margin-bottom: 1.5rem;
+        text-align: center;
+        color: var(--secondary-color);
     }
 
-    /* Logo优化 */
-    .logo {
-        font-size: 1rem;
+    .main-content {
+        padding: 0;
+        margin-top: 1rem;
     }
 
-    .logo img {
-        width: 24px;
-        height: 24px;
-    }
-
-    /* 导航栏优化 */
-    nav {
-        padding: 8px 12px;
-    }
-
-    /* 编辑器容器优化 */
-    .editor-container {
-        padding: 8px;
-        margin: 8px 0;
-        border-radius: 4px;
-    }
-
-    /* 模式选择器优化 */
-    .mode-selector {
-        padding: 4px;
-    }
-
-    .mode-group {
+    /* 响应式布局优化 */
+    .grid-container {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 4px;
-        padding: 4px;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        margin: 1rem 0;
     }
 
-    .mode-group::-webkit-scrollbar {
-        display: none;
+    .card {
+        padding: 1rem;
+        border-radius: 8px;
+        background-color: white;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     }
 
-    .mode-btn {
-        padding: 6px 8px;
-        font-size: 0.8rem;
-        white-space: nowrap;
-        min-width: auto;
+    /* 页脚优化 */
+    .footer {
+        margin-top: 2rem;
+        padding: 1rem;
+        text-align: center;
+        font-size: 0.85rem;
+        color: var(--secondary-color);
     }
 
-    /* 文本区域优化 */
-    .text-areas {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .text-area-container {
-        padding: 8px;
-    }
-
-    textarea {
-        min-height: 150px;
-        font-size: 0.9rem;
-        padding: 8px;
-    }
-
-    /* 按钮组优化 */
-    .text-area-footer {
-        padding: 6px 8px;
-        margin-top: 4px;
-    }
-
-    .button-group {
-        gap: 4px;
-    }
-
-    .button-group button {
-        padding: 6px 8px;
-        font-size: 0.8rem;
-    }
-
-    .button-group button svg {
-        width: 14px;
-        height: 14px;
-    }
-
-    /* 字数统计优化 */
-    .word-count {
-        font-size: 0.8rem;
-    }
-
-    /* 加载状态优化 */
-    .loading-overlay {
-        padding: 12px;
-    }
-
-    .loading-text {
-        font-size: 0.9rem;
-        padding: 0 12px;
-    }
-
-    .loading-time {
-        font-size: 0.8rem;
-        padding: 4px 8px;
-    }
-
-    .loading-spinner {
-        width: 40px;
-        height: 40px;
+    .footer a {
+        color: var(--primary-color);
+        text-decoration: none;
     }
 }
 
