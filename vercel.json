@@ -16,12 +16,20 @@
         {
             "src": "*.css",
             "use": "@vercel/static"
+        },
+        {
+            "src": "*.ico",
+            "use": "@vercel/static"
         }
     ],
     "routes": [
         {
             "src": "/api/humanize",
             "dest": "/api/humanize.py"
+        },
+        {
+            "src": "/favicon.ico",
+            "dest": "/favicon.ico"
         },
         {
             "src": "/(.*)",
