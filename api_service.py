@@ -15,7 +15,20 @@ load_dotenv()
 
 # 初始化Flask应用
 app = Flask(__name__)
-CORS(app)  # 启用跨域支持
+
+# CORS配置
+CORS(app, resources={
+    r"/api/*": {
+        "origins": [
+            "http://localhost:5000",
+            "http://127.0.0.1:5000",
+            "https://humanizadordeia.top",
+            "https://humanize-alpha.vercel.app"
+        ],
+        "methods": ["POST"],
+        "allow_headers": ["Content-Type", "Authorization"]
+    }
+})
 
 # 初始化限制器
 limiter = Limiter(
