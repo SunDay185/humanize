@@ -49,6 +49,9 @@ document.addEventListener('DOMContentLoaded', () => {
         'Reducir': 'shorten'
     };
 
+
+
+    
     // Mostrar mensaje de error
     function showError(message) {
         const errorDiv = document.createElement('div');
