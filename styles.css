@@ -1022,3 +1022,190 @@ footer {
         transform: rotate(360deg);
     }
 } 
+
+/* 移动端适配 */
+@media screen and (max-width: 768px) {
+    /* 整体布局调整 */
+    .editor-container {
+        padding: 10px;
+        margin: 10px;
+    }
+
+    /* 模式选择器调整 */
+    .mode-group {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        padding: 8px;
+    }
+
+    .mode-btn {
+        width: 100%;
+        padding: 8px;
+        font-size: 14px;
+    }
+
+    /* 文本区域调整 */
+    .text-areas {
+        flex-direction: column;
+    }
+
+    .text-area-container {
+        width: 100%;
+        margin: 10px 0;
+    }
+
+    textarea {
+        min-height: 200px;
+    }
+
+    /* 按钮组调整 */
+    .button-group {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .button-group button {
+        padding: 8px;
+        font-size: 14px;
+    }
+
+    /* 页面标题调整 */
+    .page-title {
+        padding: 15px;
+    }
+
+    .page-title h1 {
+        font-size: 24px;
+    }
+
+    /* 功能卡片调整 */
+    .features-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        padding: 10px;
+    }
+
+    .feature-card {
+        padding: 15px;
+    }
+
+    /* 用户卡片调整 */
+    .users-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        padding: 10px;
+    }
+
+    .user-card {
+        padding: 15px;
+    }
+
+    /* 页脚调整 */
+    .footer-content {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px 10px;
+    }
+
+    .footer-section {
+        margin: 10px 0;
+    }
+
+    /* 导航栏调整 */
+    nav {
+        padding: 10px;
+    }
+
+    .logo {
+        font-size: 18px;
+    }
+
+    .logo img {
+        width: 30px;
+        height: 30px;
+    }
+
+    /* 加载状态调整 */
+    .loading-overlay {
+        padding: 15px;
+    }
+
+    .loading-text {
+        font-size: 14px;
+    }
+
+    .loading-time {
+        font-size: 12px;
+    }
+
+    /* FAQ部分调整 */
+    .faq-container {
+        padding: 10px;
+    }
+
+    .faq-item {
+        padding: 15px;
+        margin-bottom: 10px;
+    }
+
+    /* SEO内容部分调整 */
+    .seo-section {
+        padding: 15px;
+        margin: 10px 0;
+    }
+
+    .seo-section h2 {
+        font-size: 20px;
+    }
+
+    /* 步骤说明调整 */
+    .steps-container {
+        padding: 10px;
+    }
+
+    .steps-container ol {
+        padding-left: 20px;
+    }
+
+    /* 错误消息调整 */
+    .error-message {
+        padding: 10px;
+        margin: 10px;
+        font-size: 14px;
+    }
+}
+
+/* 超小屏幕适配 */
+@media screen and (max-width: 480px) {
+    .mode-group {
+        grid-template-columns: 1fr;
+    }
+
+    .button-group button {
+        width: 100%;
+    }
+
+    .page-title h1 {
+        font-size: 20px;
+    }
+
+    .footer-logo span {
+        font-size: 16px;
+    }
+}
+
+/* 确保在所有设备上的触摸体验 */
+@media (hover: none) {
+    .mode-btn:hover,
+    .button-group button:hover,
+    .copy-btn:hover {
+        opacity: 1;
+    }
+
+    .mode-btn:active,
+    .button-group button:active,
+    .copy-btn:active {
+        transform: scale(0.98);
+    }
+} 
