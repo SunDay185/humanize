@@ -1025,175 +1025,194 @@ footer {
 
 /* 移动端适配 */
 @media screen and (max-width: 768px) {
-    /* 整体布局调整 */
-    .editor-container {
-        padding: 10px;
-        margin: 10px;
-    }
-
-    /* 模式选择器调整 */
-    .mode-group {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 8px;
-        padding: 8px;
-    }
-
-    .mode-btn {
-        width: 100%;
-        padding: 8px;
-        font-size: 14px;
-    }
-
-    /* 文本区域调整 */
-    .text-areas {
-        flex-direction: column;
-    }
-
-    .text-area-container {
-        width: 100%;
-        margin: 10px 0;
-    }
-
-    textarea {
-        min-height: 200px;
-    }
-
-    /* 按钮组调整 */
-    .button-group {
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-
-    .button-group button {
-        padding: 8px;
-        font-size: 14px;
-    }
-
-    /* 页面标题调整 */
+    /* 标题区域优化 */
     .page-title {
-        padding: 15px;
+        margin: 1rem auto;
+        padding: 10px;
+        text-align: center;
     }
 
     .page-title h1 {
-        font-size: 24px;
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
     }
 
-    /* 功能卡片调整 */
-    .features-grid {
-        grid-template-columns: 1fr;
-        gap: 15px;
-        padding: 10px;
+    .page-title p {
+        font-size: 0.9rem;
+        line-height: 1.4;
     }
 
-    .feature-card {
-        padding: 15px;
-    }
-
-    /* 用户卡片调整 */
-    .users-grid {
-        grid-template-columns: 1fr;
-        gap: 15px;
-        padding: 10px;
-    }
-
-    .user-card {
-        padding: 15px;
-    }
-
-    /* 页脚调整 */
-    .footer-content {
-        flex-direction: column;
-        text-align: center;
-        padding: 20px 10px;
-    }
-
-    .footer-section {
-        margin: 10px 0;
-    }
-
-    /* 导航栏调整 */
-    nav {
-        padding: 10px;
-    }
-
+    /* Logo优化 */
     .logo {
-        font-size: 18px;
+        font-size: 1rem;
     }
 
     .logo img {
-        width: 30px;
-        height: 30px;
+        width: 24px;
+        height: 24px;
     }
 
-    /* 加载状态调整 */
+    /* 导航栏优化 */
+    nav {
+        padding: 8px 12px;
+    }
+
+    /* 编辑器容器优化 */
+    .editor-container {
+        padding: 8px;
+        margin: 8px 0;
+        border-radius: 4px;
+    }
+
+    /* 模式选择器优化 */
+    .mode-selector {
+        padding: 4px;
+    }
+
+    .mode-group {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 4px;
+        padding: 4px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    .mode-group::-webkit-scrollbar {
+        display: none;
+    }
+
+    .mode-btn {
+        padding: 6px 8px;
+        font-size: 0.8rem;
+        white-space: nowrap;
+        min-width: auto;
+    }
+
+    /* 文本区域优化 */
+    .text-areas {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .text-area-container {
+        padding: 8px;
+    }
+
+    textarea {
+        min-height: 150px;
+        font-size: 0.9rem;
+        padding: 8px;
+    }
+
+    /* 按钮组优化 */
+    .text-area-footer {
+        padding: 6px 8px;
+        margin-top: 4px;
+    }
+
+    .button-group {
+        gap: 4px;
+    }
+
+    .button-group button {
+        padding: 6px 8px;
+        font-size: 0.8rem;
+    }
+
+    .button-group button svg {
+        width: 14px;
+        height: 14px;
+    }
+
+    /* 字数统计优化 */
+    .word-count {
+        font-size: 0.8rem;
+    }
+
+    /* 加载状态优化 */
     .loading-overlay {
-        padding: 15px;
+        padding: 12px;
     }
 
     .loading-text {
-        font-size: 14px;
+        font-size: 0.9rem;
+        padding: 0 12px;
     }
 
     .loading-time {
-        font-size: 12px;
+        font-size: 0.8rem;
+        padding: 4px 8px;
     }
 
-    /* FAQ部分调整 */
-    .faq-container {
-        padding: 10px;
-    }
-
-    .faq-item {
-        padding: 15px;
-        margin-bottom: 10px;
-    }
-
-    /* SEO内容部分调整 */
-    .seo-section {
-        padding: 15px;
-        margin: 10px 0;
-    }
-
-    .seo-section h2 {
-        font-size: 20px;
-    }
-
-    /* 步骤说明调整 */
-    .steps-container {
-        padding: 10px;
-    }
-
-    .steps-container ol {
-        padding-left: 20px;
-    }
-
-    /* 错误消息调整 */
-    .error-message {
-        padding: 10px;
-        margin: 10px;
-        font-size: 14px;
+    .loading-spinner {
+        width: 40px;
+        height: 40px;
     }
 }
 
 /* 超小屏幕适配 */
 @media screen and (max-width: 480px) {
+    /* 模式按钮优化 */
     .mode-group {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 4px;
+    }
+
+    .mode-btn {
+        padding: 8px 4px;
+        font-size: 0.75rem;
+    }
+
+    /* 按钮组优化 */
+    .button-group {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        width: 100%;
     }
 
     .button-group button {
         width: 100%;
+        justify-content: center;
     }
 
+    /* 文本区域优化 */
+    textarea {
+        min-height: 120px;
+    }
+
+    /* 页面标题进一步优化 */
     .page-title h1 {
-        font-size: 20px;
+        font-size: 1.5rem;
     }
 
-    .footer-logo span {
-        font-size: 16px;
+    .page-title p {
+        font-size: 0.8rem;
+        padding: 0 8px;
     }
-}
+
+    /* 加载状态进一步优化 */
+    .loading-text {
+        font-size: 0.8rem;
+        text-align: center;
+    }
+
+    .loading-time {
+        font-size: 0.7rem;
+    }
+
+    /* 错误消息优化 */
+    .error-message {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+        max-width: 90%;
+        left: 50%;
+        transform: translateX(-50%);
+        right: auto;
+    }
+} 
 
 /* 确保在所有设备上的触摸体验 */
 @media (hover: none) {
