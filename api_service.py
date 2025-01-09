@@ -23,10 +23,14 @@ CORS(app, resources={
             "http://localhost:5000",
             "http://127.0.0.1:5000",
             "https://humanizadordeia.top",
-            "https://humanize-alpha.vercel.app"
+            "https://humanize-git-main-sundays-projects-f9714b4b.vercel.app",
+            "https://humanize-343y2n1a8-sundays-projects-f9714b4b.vercel.app"
         ],
-        "methods": ["POST"],
-        "allow_headers": ["Content-Type", "Authorization"]
+        "methods": ["POST", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"],
+        "expose_headers": ["Content-Type"],
+        "supports_credentials": True,
+        "max_age": 600
     }
 })
 
@@ -229,9 +233,12 @@ def call_deepseek_api(prompt):
     except Exception as e:
         raise
 
-@app.route('/api/humanize', methods=['POST'])
+@app.route('/api/humanize', methods=['POST', 'OPTIONS'])
 @limiter.limit("10 per minute")  # 添加每分钟请求限制
 def humanize_text():
+    if request.method == 'OPTIONS':
+        return '', 204  # 返回成功状态码，但没有内容
+    
     try:
         # 检查IP限制
         check_ip_limit()
