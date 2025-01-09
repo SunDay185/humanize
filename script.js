@@ -8,6 +8,35 @@ document.addEventListener('DOMContentLoaded', () => {
     const pasteBtn = document.getElementById('paste-btn');
     const wordCounts = document.querySelectorAll('.word-count');
 
+    // API URL配置
+    const getApiUrl = () => {
+        // 检查是否是本地文件系统
+        if (window.location.protocol === 'file:') {
+            return 'http://localhost:5000/api/humanize';
+        }
+        // 检查是否是本地开发服务器
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            return 'http://localhost:5000/api/humanize';
+        }
+        // 生产环境使用相对路径
+        return '/api/humanize';
+    };
+
+    const API_URL = getApiUrl();
+
+    // 显示开发环境提示
+    if (window.location.protocol === 'file:') {
+        const warningDiv = document.createElement('div');
+        warningDiv.className = 'warning-message';
+        warningDiv.style.cssText = 'background-color: #fff3cd; color: #856404; padding: 10px; margin: 10px; border-radius: 4px; text-align: center;';
+        warningDiv.innerHTML = `
+            <strong>开发环境提示：</strong><br>
+            请确保本地API服务器正在运行 (http://localhost:5000)<br>
+            建议使用本地服务器打开页面，而不是直接打开文件。
+        `;
+        document.body.insertBefore(warningDiv, document.body.firstChild);
+    }
+
     // Mapeo de modos para la API
     const modeMapping = {
         'Gratuito': 'free',
@@ -93,10 +122,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Función de procesamiento de texto
     async function humanizeText(text) {
         const displayMode = document.querySelector('.mode-btn.active').textContent;
-        const mode = modeMapping[displayMode] || 'free'; // Usar el modo mapeado o 'free' por defecto
+        const mode = modeMapping[displayMode] || 'free';
         
         try {
-            const response = await fetch('http://127.0.0.1:5000/api/humanize', {
+            const response = await fetch(API_URL, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
