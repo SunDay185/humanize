@@ -23,8 +23,8 @@ CORS(app, resources={
             "http://localhost:5000",
             "http://127.0.0.1:5000",
             "https://humanizadordeia.top",
-            "https://humanize-git-main-sundays-projects-f9714b4b.vercel.app",
-            "https://humanize-343y2n1a8-sundays-projects-f9714b4b.vercel.app"
+            "https://humanize-alpha.vercel.app",
+            "https://humanize-sundays-projects-f9714b4b.vercel.app"
         ],
         "methods": ["POST", "OPTIONS"],
         "allow_headers": ["Content-Type", "Authorization"],

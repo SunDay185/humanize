@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // API配置
     const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
         ? 'http://127.0.0.1:5000'
-        : 'https://humanize-git-main-sundays-projects-f9714b4b.vercel.app'; // Vercel部署的API域名
+        : 'https://humanize-sundays-projects-f9714b4b.vercel.app'; // Vercel部署的API域名
 
     // Mostrar mensaje de error
     function showError(message) {
