@@ -1382,3 +1382,54 @@ footer {
         margin: 15px 0;
     }
 } 
+
+@media screen and (max-width: 768px) {
+    /* 任务1：统一输入框和输出框文字大小 */
+    textarea,
+    .output-container textarea {
+        /* 修改：统一设置为13px */
+        font-size: 13px !important;
+        line-height: 1.5;
+    }
+
+    /* 任务2：优化模式按钮文字大小 */
+    .mode-btn {
+        /* 修改：将字体进一步缩小到6.5px */
+        font-size: 6.5px;
+        /* 其他样式保持不变 */
+        padding: 4px 2px;
+        min-height: 28px;
+    }
+
+    /* 任务3：优化输出框底部工具栏布局 */
+    .output-footer {
+        /* 修改：设置为两列等宽布局 */
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px;
+        padding: 8px;
+        align-items: center;
+        background-color: #fafafa;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .output-footer .word-count {
+        /* 修改：字数统计居中显示 */
+        text-align: center;
+        justify-self: center;
+    }
+
+    .output-footer .copy-btn {
+        /* 修改：复制按钮占满右侧空间 */
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    /* 超小屏幕下的特殊处理 */
+    .mode-btn {
+        /* 修改：在超小屏幕下进一步缩小字体 */
+        font-size: 6px;
+    }
+} 
