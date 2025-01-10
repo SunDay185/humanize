@@ -1395,7 +1395,7 @@ footer {
     /* 任务2：优化模式按钮文字大小 */
     .mode-btn {
         /* 修改：将字体进一步缩小到6.5px */
-        font-size: 6.5px;
+        font-size: 7.5px;
         /* 其他样式保持不变 */
         padding: 4px 2px;
         min-height: 28px;
