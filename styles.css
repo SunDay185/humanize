@@ -1077,78 +1077,124 @@ footer {
 
 /* 移动端布局优化 */
 @media screen and (max-width: 768px) {
-    /* 模式按钮优化 */
+    /* 模式按钮样式优化 */
     .mode-selector {
         padding: 8px;
     }
 
     .mode-group {
         display: grid;
+        /* 修改：保持4列2行布局 */
         grid-template-columns: repeat(4, 1fr);
         grid-template-rows: repeat(2, 1fr);
-        gap: 6px;
-        padding: 8px;
+        gap: 4px; /* 修改：减小按钮间距 */
+        padding: 6px;
         width: 100%;
     }
 
     .mode-btn {
         width: 100%;
-        padding: 8px 4px;
-        font-size: 12px;
+        /* 修改：优化按钮内边距，确保文字显示完整 */
+        padding: 4px 2px;
+        /* 修改：减小字体大小以适应按钮宽度 */
+        font-size: 11px;
         text-align: center;
         border-radius: 4px;
         margin: 0;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        min-height: 32px;
+        /* 修改：减小按钮高度 */
+        min-height: 28px;
         display: flex;
         align-items: center;
         justify-content: center;
+        /* 修改：增加按钮背景色以提高可读性 */
+        background-color: #f5f5f5;
     }
 
-    /* 操作按钮布局优化 */
+    .mode-btn.active {
+        /* 修改：优化激活状态样式 */
+        background-color: var(--primary-color);
+        color: white;
+        font-weight: 500;
+    }
+
+    /* 输入区域操作按钮布局优化 */
     .text-area-footer {
         padding: 8px;
+        /* 修改：调整底部工具栏布局 */
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto;
+        gap: 8px;
+    }
+
+    /* 修改：字数统计占据第一行第一列 */
+    .word-count {
+        grid-row: 1;
+        grid-column: 1;
+        font-size: 12px;
+        align-self: center;
+    }
+
+    /* 修改：清空按钮占据第一行第二列 */
+    #clear-btn {
+        grid-row: 1;
+        grid-column: 2;
+    }
+
+    /* 修改：粘贴按钮占据第二行第一列 */
+    #paste-btn {
+        grid-row: 2;
+        grid-column: 1;
+    }
+
+    /* 修改：执行按钮占据第二行第二列 */
+    #humanize-btn {
+        grid-row: 2;
+        grid-column: 2;
     }
 
     .button-group {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        grid-template-rows: repeat(2, 1fr);
-        gap: 6px;
-        width: 100%;
+        /* 修改：重置按钮组样式以适应网格布局 */
+        display: contents;
     }
 
     .button-group button {
         width: 100%;
         padding: 8px;
         font-size: 13px;
-        height: auto;
+        height: 36px;
         justify-content: center;
+        margin: 0;
     }
 
-    /* 输出区域优化 */
+    /* 输出区域文字显示优化 */
     .output-container {
         padding: 0;
     }
 
     .output-container textarea {
+        /* 修改：确保输出框和输入框样式一致 */
         width: 100%;
         padding: 10px;
         min-height: 150px;
         font-size: 14px;
         line-height: 1.5;
-        max-width: none;
+        /* 修改：移除右侧空白区域 */
+        padding-right: 10px !important;
+        box-sizing: border-box;
+        max-width: 100%;
     }
 
+    /* 修改：优化输出框底部工具栏 */
     .output-footer {
         padding: 8px;
         margin-top: 0;
-    }
-
-    .word-count {
-        font-size: 12px;
+        position: relative;
+        width: 100%;
+        box-sizing: border-box;
     }
 }
 
