@@ -1097,7 +1097,7 @@ footer {
         /* 修改：优化按钮内边距，确保文字显示完整 */
         padding: 4px 2px;
         /* 修改：减小字体大小以适应按钮宽度 */
-        font-size: 11px;
+        font-size: 9px;
         text-align: center;
         border-radius: 4px;
         margin: 0;

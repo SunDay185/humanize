@@ -159,23 +159,35 @@ document.addEventListener('DOMContentLoaded', () => {
     pasteBtn.addEventListener('click', async () => {
         try {
             if (navigator.userAgent.match(/mobile|android|iphone|ipad/i)) {
-                // 移动端使用textarea作为中转
-                const tempTextarea = document.createElement('textarea');
-                document.body.appendChild(tempTextarea);
-                tempTextarea.focus();
-                
-                // 触发粘贴事件
-                const successful = document.execCommand('paste');
-                const text = tempTextarea.value;
-                
-                // 清理临时元素
-                document.body.removeChild(tempTextarea);
-                
-                if (successful && text) {
+                // 创建隐藏的临时输入框
+                const tempInput = document.createElement('input');
+                tempInput.style.position = 'fixed';
+                tempInput.style.opacity = '0';
+                tempInput.style.top = '50%';
+                // 防止页面跳转
+                tempInput.style.pointerEvents = 'none';
+                document.body.appendChild(tempInput);
+
+                // 尝试使用现代Clipboard API
+                try {
+                    const text = await navigator.clipboard.readText();
                     inputTextarea.value = text;
                     updateWordCount(inputTextarea, wordCounts[0]);
-                } else {
-                    showError('Error al pegar el texto. Por favor, pegue manualmente');
+                } catch (clipboardError) {
+                    // 如果Clipboard API失败，回退到传统方法
+                    tempInput.focus();
+                    const successful = document.execCommand('paste');
+                    if (successful) {
+                        inputTextarea.value = tempInput.value;
+                        updateWordCount(inputTextarea, wordCounts[0]);
+                    } else {
+                        showError('No se puede acceder al portapapeles. Por favor, mantenga presionado el área de texto y pegue manualmente.');
+                    }
+                } finally {
+                    // 确保清理临时元素
+                    document.body.removeChild(tempInput);
+                    // 恢复原文本框的焦点
+                    inputTextarea.focus();
                 }
             } else {
                 // 桌面端使用 Clipboard API
@@ -184,7 +196,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateWordCount(inputTextarea, wordCounts[0]);
             }
         } catch (error) {
-            showError('Error al pegar el texto. Por favor, pegue manualmente');
+            showError('Para pegar texto: mantenga presionado el área de texto y seleccione "Pegar"');
+            console.error('Paste error:', error);
         }
     });
 
