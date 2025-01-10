@@ -1079,59 +1079,56 @@ footer {
 @media screen and (max-width: 768px) {
     /* 模式按钮优化 */
     .mode-selector {
-        padding: 10px;
+        padding: 8px;
     }
 
     .mode-group {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 8px;
-        padding: 0;
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        gap: 6px;
+        padding: 8px;
         width: 100%;
     }
 
     .mode-btn {
         width: 100%;
-        padding: 8px 6px;
-        font-size: 13px;
+        padding: 8px 4px;
+        font-size: 12px;
         text-align: center;
         border-radius: 4px;
         margin: 0;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        min-height: 34px;
+        min-height: 32px;
         display: flex;
         align-items: center;
         justify-content: center;
     }
 
-    .mode-btn.active {
-        background-color: var(--primary-color);
-        color: white;
-        font-weight: 600;
+    /* 操作按钮布局优化 */
+    .text-area-footer {
+        padding: 8px;
     }
 
-    /* 文本区域优化 */
-    .text-areas {
-        display: flex;
-        flex-direction: column;
-        gap: 1px;
-    }
-
-    .text-area-container {
-        padding: 10px;
-    }
-
-    textarea {
+    .button-group {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        gap: 6px;
         width: 100%;
-        min-height: 150px;
-        padding: 10px;
-        font-size: 14px;
-        line-height: 1.5;
     }
 
-    /* 输出容器优化 */
+    .button-group button {
+        width: 100%;
+        padding: 8px;
+        font-size: 13px;
+        height: auto;
+        justify-content: center;
+    }
+
+    /* 输出区域优化 */
     .output-container {
         padding: 0;
     }
@@ -1142,11 +1139,16 @@ footer {
         min-height: 150px;
         font-size: 14px;
         line-height: 1.5;
+        max-width: none;
     }
 
     .output-footer {
-        padding: 10px;
+        padding: 8px;
         margin-top: 0;
+    }
+
+    .word-count {
+        font-size: 12px;
     }
 }
 
