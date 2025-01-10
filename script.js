@@ -158,9 +158,31 @@ document.addEventListener('DOMContentLoaded', () => {
     // Pegar texto
     pasteBtn.addEventListener('click', async () => {
         try {
-            const text = await navigator.clipboard.readText();
-            inputTextarea.value = text;
-            updateWordCount(inputTextarea, wordCounts[0]);
+            if (navigator.userAgent.match(/mobile|android|iphone|ipad/i)) {
+                // 移动端使用textarea作为中转
+                const tempTextarea = document.createElement('textarea');
+                document.body.appendChild(tempTextarea);
+                tempTextarea.focus();
+                
+                // 触发粘贴事件
+                const successful = document.execCommand('paste');
+                const text = tempTextarea.value;
+                
+                // 清理临时元素
+                document.body.removeChild(tempTextarea);
+                
+                if (successful && text) {
+                    inputTextarea.value = text;
+                    updateWordCount(inputTextarea, wordCounts[0]);
+                } else {
+                    showError('Error al pegar el texto. Por favor, pegue manualmente');
+                }
+            } else {
+                // 桌面端使用 Clipboard API
+                const text = await navigator.clipboard.readText();
+                inputTextarea.value = text;
+                updateWordCount(inputTextarea, wordCounts[0]);
+            }
         } catch (error) {
             showError('Error al pegar el texto. Por favor, pegue manualmente');
         }
