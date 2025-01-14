@@ -42,6 +42,13 @@
         {
             "src": "/(.*)",
             "dest": "/$1"
+        },
+        {
+            "src": "/sitemap.xml",
+            "headers": {
+                "Content-Type": "application/xml"
+            },
+            "dest": "/sitemap.xml"
         }
     ]
 } 
