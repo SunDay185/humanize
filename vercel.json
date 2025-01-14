@@ -6,6 +6,10 @@
             "use": "@vercel/python"
         },
         {
+            "src": "sitemap.xml",
+            "use": "@vercel/static"
+        },
+        {
             "src": "*.html",
             "use": "@vercel/static"
         },
@@ -28,6 +32,13 @@
     ],
     "routes": [
         {
+            "src": "/sitemap.xml",
+            "dest": "/sitemap.xml",
+            "headers": {
+                "Content-Type": "application/xml"
+            }
+        },
+        {
             "src": "/api/humanize",
             "dest": "/api/humanize.py"
         },
@@ -42,13 +53,6 @@
         {
             "src": "/(.*)",
             "dest": "/$1"
-        },
-        {
-            "src": "/sitemap.xml",
-            "headers": {
-                "Content-Type": "application/xml"
-            },
-            "dest": "/sitemap.xml"
         }
     ]
 } 
