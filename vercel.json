@@ -50,11 +50,5 @@
             },
             "dest": "/sitemap.xml"
         }
-    ],
-    "redirects": [
-        {
-            "source": "/sitemap.xml",
-            "destination": "/api/sitemap"
-        }
     ]
 } 
