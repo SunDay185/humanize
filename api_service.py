@@ -346,7 +346,23 @@ def humanize_text():
         
         data = request.json
         text = data.get('text')
-        mode = data.get('mode', 'free').lower()
+        
+        # 获取并清理模式参数
+        raw_mode = data.get('mode', 'free')
+        # 如果模式值包含空格或非ASCII字符，只取第一部分
+        mode = raw_mode.split()[0].lower() if raw_mode else 'free'
+        
+        # 添加模式参数的详细日志，包括原始数据内容
+        print(f"[Flask] 接收到原始模式参数: '{raw_mode}', 处理后: '{mode}'")
+        print(f"[Flask] 原始请求数据: {json.dumps(data, ensure_ascii=False)}")
+        
+        # 验证模式参数是否有效
+        valid_modes = ['free', 'standard', 'academic', 'simple', 'formal', 'informal', 'expand', 'shorten']
+        if mode not in valid_modes:
+            print(f"[Flask] 警告: 接收到无效的模式参数 '{mode}'，使用默认值 'free'")
+            mode = 'free'
+        else:
+            print(f"[Flask] 使用有效的模式参数: '{mode}'")
         
         if not text:
             return jsonify({

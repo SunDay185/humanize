@@ -20,6 +20,9 @@ document.addEventListener('DOMContentLoaded', () => {
         'Reducir': 'shorten'
     };
 
+    // 打印映射表以便调试
+    console.log('模式映射表:', modeMapping);
+
     // API配置
     const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
         ? 'http://127.0.0.1:5000'
@@ -97,20 +100,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Función de procesamiento de texto
     async function humanizeText(text) {
-        const displayMode = document.querySelector('.mode-btn.active').textContent;
-        const mode = modeMapping[displayMode] || 'free';
+        // 获取当前激活的模式按钮
+        const activeButton = document.querySelector('.mode-btn.active');
+        const displayMode = activeButton ? activeButton.textContent : 'Gratuito';
+        
+        // 解决模式名称包含中文或空格的问题
+        const cleanDisplayMode = displayMode.split(/\s+/)[0].trim(); // 只取第一个单词并去除空格
+        const mode = modeMapping[cleanDisplayMode] || 'free';
+        
+        // 添加调试日志
+        console.log(`原始模式文本: "${displayMode}", 清洗后: "${cleanDisplayMode}", 映射到API模式: "${mode}"`);
         
         try {
+            // 确保请求数据中包含正确的模式
+            const requestData = {
+                text: text,
+                mode: mode
+            };
+            
+            // 添加请求数据日志
+            console.log('发送到API的请求数据:', JSON.stringify(requestData, null, 2));
+            console.log('模式参数:', mode);
+            
             const response = await fetch(`${API_BASE_URL}/api/humanize`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json'
                 },
-                body: JSON.stringify({
-                    text: text,
-                    mode: mode
-                })
+                body: JSON.stringify(requestData)
             });
             
             if (!response.ok) {
@@ -209,11 +227,24 @@ document.addEventListener('DOMContentLoaded', () => {
         updateWordCount(outputTextarea, wordCounts[1]);
     });
 
+    // 在页面加载时检查所有模式按钮的内容
+    console.log("所有模式按钮文本内容:");
+    modeButtons.forEach((btn, index) => {
+        console.log(`按钮 ${index + 1}: "${btn.textContent}", 长度: ${btn.textContent.length}`);
+    });
+
     // Selección de modo
     modeButtons.forEach(button => {
         button.addEventListener('click', () => {
             modeButtons.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
+            
+            // 解决模式名称包含中文或空格的问题
+            const originalText = button.textContent;
+            const cleanText = originalText.split(/\s+/)[0].trim();
+            const mappedMode = modeMapping[cleanText] || 'free';
+            
+            console.log(`模式已切换: 原始文本="${originalText}", 清洗后="${cleanText}", 映射值="${mappedMode}"`);
         });
     });
 

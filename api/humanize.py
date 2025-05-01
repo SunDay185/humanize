@@ -84,8 +84,8 @@ def call_openrouter_api(prompt):
         headers = {
             "Authorization": f"Bearer {OPENROUTER_API_KEY}",
             "Content-Type": "application/json",
-            "HTTP-Referer": "https://humanizadordeia.top",  # 你的网站URL
-            "X-Title": "Humanize AI Text"  # 应用名称
+            "HTTP-Referer": "https://humanizadordeia.top",
+            "X-Title": "Humanize AI Text"
         }
         
         data = {
@@ -233,7 +233,23 @@ class handler(BaseHTTPRequestHandler):
             data = json.loads(post_data.decode('utf-8'))
             
             text = data.get('text')
-            mode = data.get('mode', 'free').lower()
+            
+            # 获取并清理模式参数
+            raw_mode = data.get('mode', 'free')
+            # 如果模式值包含空格或非ASCII字符，只取第一部分
+            mode = raw_mode.split()[0].lower() if raw_mode else 'free'
+            
+            # 添加模式参数的详细日志，包括原始数据内容
+            print(f"[Vercel] 接收到原始模式参数: '{raw_mode}', 处理后: '{mode}'")
+            print(f"[Vercel] 原始请求数据: {json.dumps(data, ensure_ascii=False)}")
+            
+            # 验证模式参数是否有效
+            valid_modes = ['free', 'standard', 'academic', 'simple', 'formal', 'informal', 'expand', 'shorten']
+            if mode not in valid_modes:
+                print(f"[Vercel] 警告: 接收到无效的模式参数 '{mode}'，使用默认值 'free'")
+                mode = 'free'
+            else:
+                print(f"[Vercel] 使用有效的模式参数: '{mode}'")
             
             if not text:
                 raise Exception('请提供需要处理的文本')
@@ -241,7 +257,12 @@ class handler(BaseHTTPRequestHandler):
             if len(text) > 5000:
                 raise Exception('文本长度超过限制（最大5000字符）')
             
-            prompt = get_prompt_by_mode_and_language(mode, detect_language(text), text)
+            language = detect_language(text)
+            prompt = get_prompt_by_mode_and_language(mode, language, text)
+            
+            # 添加语言检测和提示词生成日志
+            print(f"[Vercel] 检测到语言: {language}, 使用模式: {mode}")
+            print(f"[Vercel] 生成的提示词开头: {prompt.split('\\n\\n')[0]}")
             
             # 记录请求信息
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
