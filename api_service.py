@@ -9,12 +9,18 @@ import re
 import time
 from datetime import datetime, timedelta
 from collections import defaultdict
+import json
 
 # 加载环境变量
 load_dotenv()
 
 # 初始化Flask应用
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='', static_folder='./')
+
+# 添加根路由，提供index.html
+@app.route('/')
+def index():
+    return app.send_static_file('index.html')
 
 # CORS配置
 CORS(app, resources={
@@ -44,7 +50,10 @@ limiter = Limiter(
 
 # 配置API密钥
 DEEPSEEK_API_KEY = os.getenv('DEEPSEEK_API_KEY')
-DEEPSEEK_API_BASE = os.getenv('DEEPSEEK_API_BASE')
+DEEPSEEK_API_BASE = os.getenv('DEEPSEEK_API_BASE', 'https://api.deepseek.com/v1/chat/completions')
+OPENROUTER_API_KEY = os.getenv('OPENROUTER_API_KEY', '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')
+# 使用OpenRouter的Gemini模型
+DEFAULT_MODEL = 'openrouter'
 
 # 安全配置
 MAX_TEXT_LENGTH = 5000  # 最大文本长度
@@ -88,10 +97,13 @@ def validate_text(text):
         if re.search(pattern, text, re.IGNORECASE):
             raise Exception("检测到敏感内容，请修改后重试")
 
-def log_request(ip, text_length, mode):
+def log_request(ip, text_length, mode, model=None):
     """记录请求信息"""
+    if model is None:
+        model = DEFAULT_MODEL
+        
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    log_entry = f"[{timestamp}] IP: {ip}, Length: {text_length}, Mode: {mode}\n"
+    log_entry = f"[{timestamp}] IP: {ip}, Length: {text_length}, Mode: {mode}, Model: {model}\n"
     
     with open("request_log.txt", "a", encoding="utf-8") as f:
         f.write(log_entry)
@@ -175,6 +187,89 @@ def get_system_prompt(language):
     else:
         return "You are a professional text rewriting assistant, skilled at making AI-generated text more natural and human-like while ensuring it won't be detected by AI detection tools. Always keep the output in English."
 
+def call_openrouter_api(prompt):
+    """调用OpenRouter API"""
+    try:
+        language = detect_language(prompt)
+        print(f"[OpenRouter] 准备调用API，语言: {language}, 模型: google/gemini-2.0-flash-001")
+        
+        headers = {
+            "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+            "Content-Type": "application/json",
+            "HTTP-Referer": "https://humanizadordeia.top",  # 你的网站URL
+            "X-Title": "Humanize AI Text"  # 应用名称
+        }
+        
+        data = {
+            "model": "google/gemini-2.0-flash-001",  # 使用OpenRouter上的Gemini模型
+            "messages": [
+                {"role": "system", "content": "你是一个专业的文本改写助手。请直接输出改写后的文本，不要添加任何评论、解释或其他内容。"},
+                {"role": "user", "content": prompt}
+            ],
+            "temperature": 0.7,
+            "max_tokens": 2000,
+            # 添加数据隐私策略设置，允许OpenRouter使用数据进行训练
+            "data_usage_policy": {
+                "allow_prompt_training": True,
+                "allow_response_training": True
+            }
+        }
+        
+        print(f"[OpenRouter] 请求数据: {json.dumps(data, ensure_ascii=False)[:200]}...")
+        
+        api_url = "https://openrouter.ai/api/v1/chat/completions"
+        print(f"[OpenRouter] 发送请求到: {api_url}")
+        
+        response = requests.post(
+            api_url,
+            headers=headers,
+            json=data,
+            timeout=30,
+            verify=True
+        )
+        
+        print(f"[OpenRouter] 收到响应，状态码: {response.status_code}")
+        
+        if response.status_code != 200:
+            error_message = f"OpenRouter API调用失败: HTTP {response.status_code}"
+            try:
+                error_detail = response.json()
+                error_detail_str = json.dumps(error_detail, ensure_ascii=False)
+                print(f"[OpenRouter] 错误详情: {error_detail_str}")
+                error_message += f" - {error_detail.get('error', {}).get('message', str(error_detail))}"
+            except Exception as e:
+                response_text = response.text[:500]  # 限制长度，避免日志过大
+                print(f"[OpenRouter] 解析响应JSON失败: {str(e)}, 响应内容: {response_text}")
+                error_message += f" - {response.text}"
+            raise Exception(error_message)
+        
+        result = response.json()
+        print(f"[OpenRouter] 成功获取响应: {json.dumps(result, ensure_ascii=False)[:200]}...")
+        
+        # 获取API返回的文本内容
+        content = result['choices'][0]['message']['content']
+        content_preview = content[:100] + "..." if len(content) > 100 else content
+        print(f"[OpenRouter] 响应内容预览: {content_preview}")
+        
+        # 清理文本，移除可能的前缀说明和后缀评论
+        content = content.strip()
+        # 如果内容以引号开始和结束，移除引号
+        if (content.startswith('"') and content.endswith('"')) or \
+           (content.startswith("'") and content.endswith("'")):
+            content = content[1:-1]
+        
+        return content
+        
+    except requests.exceptions.Timeout:
+        print("[OpenRouter] API调用超时")
+        raise Exception("API调用超时，请稍后重试")
+    except requests.exceptions.RequestException as e:
+        print(f"[OpenRouter] 网络请求错误: {str(e)}")
+        raise Exception(f"网络请求错误: {str(e)}")
+    except Exception as e:
+        print(f"[OpenRouter] 其他错误: {str(e)}")
+        raise
+
 def call_deepseek_api(prompt):
     """调用DeepSeek API"""
     try:
@@ -195,9 +290,8 @@ def call_deepseek_api(prompt):
             "stream": False
         }
         
-        api_url = "https://api.deepseek.com/v1/chat/completions"
         response = requests.post(
-            api_url,
+            DEEPSEEK_API_BASE,
             headers=headers,
             json=data,
             timeout=30,
@@ -205,7 +299,7 @@ def call_deepseek_api(prompt):
         )
         
         if response.status_code != 200:
-            error_message = f"API调用失败: HTTP {response.status_code}"
+            error_message = f"DeepSeek API调用失败: HTTP {response.status_code}"
             try:
                 error_detail = response.json()
                 error_message += f" - {error_detail.get('error', {}).get('message', str(error_detail))}"
@@ -232,6 +326,13 @@ def call_deepseek_api(prompt):
         raise Exception(f"网络请求错误: {str(e)}")
     except Exception as e:
         raise
+
+def call_ai_api(prompt):
+    """根据环境变量中配置的默认模型选择API"""
+    if DEFAULT_MODEL == 'openrouter':
+        return call_openrouter_api(prompt)
+    else:
+        return call_deepseek_api(prompt)
 
 @app.route('/api/humanize', methods=['POST', 'OPTIONS'])
 @limiter.limit("10 per minute")  # 添加每分钟请求限制
@@ -262,13 +363,26 @@ def humanize_text():
         prompt = get_prompt_by_mode_and_language(mode, detect_language(text), text)
         
         try:
-            result = call_deepseek_api(prompt)
+            result = call_ai_api(prompt)
             return jsonify({
                 'success': True,
                 'result': result
             })
         except Exception as e:
             print(f"API调用错误: {str(e)}")
+            # 如果主要模型失败，尝试备用模型
+            if DEFAULT_MODEL == 'openrouter' and DEEPSEEK_API_KEY:
+                try:
+                    print("OpenRouter API调用失败，尝试使用DeepSeek API...")
+                    result = call_deepseek_api(prompt)
+                    return jsonify({
+                        'success': True,
+                        'result': result,
+                        'model_used': 'deepseek (fallback)'
+                    })
+                except Exception as fallback_error:
+                    print(f"备用API调用也失败: {str(fallback_error)}")
+            
             return jsonify({
                 'success': False,
                 'error': f'API调用失败: {str(e)}'
@@ -280,6 +394,29 @@ def humanize_text():
             'success': False,
             'error': str(e)
         }), 429 if "限制" in str(e) else 500
+
+@app.route('/api/models', methods=['GET'])
+def get_available_models():
+    """获取可用的模型列表"""
+    models = [
+        {
+            'id': 'openrouter', 
+            'name': 'DeepSeek-R1 (OpenRouter)', 
+            'description': '使用OpenRouter代理的DeepSeek-R1模型', 
+            'default': DEFAULT_MODEL == 'openrouter'
+        }
+    ]
+    
+    # 如果有DeepSeek API密钥，添加DeepSeek模型
+    if DEEPSEEK_API_KEY:
+        models.append({
+            'id': 'deepseek', 
+            'name': 'DeepSeek Chat', 
+            'description': '使用DeepSeek官方API', 
+            'default': DEFAULT_MODEL == 'deepseek'
+        })
+    
+    return jsonify({'models': models})
 
 @app.errorhandler(429)
 def ratelimit_handler(e):

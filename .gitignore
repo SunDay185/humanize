@@ -1,0 +1,4 @@
+*.md
+.cursorindexingignore
+*.md
+README.md

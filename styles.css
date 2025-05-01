@@ -192,25 +192,16 @@ main {
     gap: 1rem;
 }
 
-.model-select {
-    padding: 0.5rem;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    background-color: white;
-    color: var(--primary-color);
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
+.model-selector-container {
+    display: none;
 }
 
-.model-select:hover {
-    border-color: var(--primary-color);
+.model-selector-label {
+    display: none;
 }
 
-.model-select:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+.model-selector {
+    display: none;
 }
 
 .mode-btn {
@@ -1423,5 +1414,26 @@ footer {
     .mode-btn {
         /* 修改：在超小屏幕下进一步缩小字体 */
         font-size: 6px;
+    }
+} 
+
+/* 响应式样式调整 */
+@media screen and (max-width: 768px) {
+    .model-selector-container {
+        display: none;
+    }
+    
+    .model-selector {
+        display: none;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .model-selector-container {
+        display: none;
+    }
+    
+    .model-selector {
+        display: none;
     }
 } 
