@@ -2,3 +2,5 @@
 .cursorindexingignore
 *.md
 README.md
+.env
+request_log.txt

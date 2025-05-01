@@ -51,7 +51,7 @@ limiter = Limiter(
 # 配置API密钥
 DEEPSEEK_API_KEY = os.getenv('DEEPSEEK_API_KEY')
 DEEPSEEK_API_BASE = os.getenv('DEEPSEEK_API_BASE', 'https://api.deepseek.com/v1/chat/completions')
-OPENROUTER_API_KEY = os.getenv('OPENROUTER_API_KEY', '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')
+OPENROUTER_API_KEY = os.getenv('OPENROUTER_API_KEY')
 # 使用OpenRouter的Gemini模型
 DEFAULT_MODEL = 'openrouter'
 
